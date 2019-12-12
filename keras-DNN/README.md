@@ -17,7 +17,7 @@ This python script uses the Keras library to train deep neural network for ttH m
 [ana]:https://www.anaconda.com/distribution/
 
 ## Install packages
-- Core packages: python=3.7.3, keras=2.3.1, tensorflow=2.2.0, root=6.18.00, root_numpy=4.8.0, scikit-learn=0.21.3,  matplotlib=3.1.1, numpy=1.16.4, pandas=0.25.1, seaborn=0.9.0
+- Core packages: python=3.7.3, keras=2.3.1, tensorflow=2.2.0, root=6.18.04, root_numpy=4.8.0, scikit-learn=0.22,  matplotlib=3.1.2, numpy=1.16.4, pandas=0.25.3, seaborn=0.9.0
 - Suggest to create new environment from the `environment.yml` file, the first line of the `yml` file sets the new environment's name.
 ```
 conda env create -f environment.yml
