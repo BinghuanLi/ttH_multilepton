@@ -62,7 +62,7 @@ def load_data(inputPath,variables,criteria):
     keys=['THQ','ttH','ttJ','ttW']
 
     for key in keys :
-        print key
+        print(key)
         if 'ttH' in key or 'TTH' in key:
             sampleNames=['ttH']
             fileNames = ['ttHnobb_DiLepRegion']
@@ -87,22 +87,22 @@ def load_data(inputPath,variables,criteria):
 
         inputTree = 'syncTree'
 
-        for process_index in xrange(len(fileNames)):
+        for process_index in range(len(fileNames)):
             fileName = fileNames[process_index]
             sampleName = sampleNames[process_index]
 
             try: tfile = ROOT.TFile(inputPath+"/"+fileName+".root")
             except :
-                print " file "+ inputPath+"/"+fileName+".root doesn't exits "
+                print(" file "+ inputPath+"/"+fileName+".root doesn't exits ")
                 continue
             try: tree = tfile.Get(inputTree)
             except :
-                print inputTree + " deosn't exists in " + inputPath+"/"+fileName+".root"
+                print(inputTree + " deosn't exists in " + inputPath+"/"+fileName+".root")
                 continue
             if tree is not None :
-                print 'criteria: ', criteria
-                #try: chunk_arr = tree2array(tree=tree, selection=criteria)#, start=0, stop=100) # Can use  start=first entry, stop = final entry desired
-                try: chunk_arr = tree2array(tree=tree, selection=criteria, start=0, stop=100) # Can use  start=first entry, stop = final entry desired
+                print('criteria: ', criteria)
+                try: chunk_arr = tree2array(tree=tree, selection=criteria)#, start=0, stop=100) # Can use  start=first entry, stop = final entry desired
+                #try: chunk_arr = tree2array(tree=tree, selection=criteria, start=0, stop=100) # Can use  start=first entry, stop = final entry desired
                 except : continue
                 else :
                     chunk_df = pd.DataFrame(chunk_arr, columns=variables)
@@ -147,21 +147,21 @@ def load_data(inputPath,variables,criteria):
         processfreq = data.groupby('key')
         samplefreq = data.groupby('process')
         if key == 'ttH':
-            print 'Process ttH frequency: ', len(processfreq.get_group('ttH'))
+            print('Process ttH frequency: ', len(processfreq.get_group('ttH')))
         elif key == 'ttJ':
-            print 'Target ttJ frequency: ', len(samplefreq.get_group('ttJ'))
+            print('Target ttJ frequency: ', len(samplefreq.get_group('ttJ')))
         elif key == 'ttW':
-            print 'Process ttW frequency: ', len(processfreq.get_group('ttW'))
+            print('Process ttW frequency: ', len(processfreq.get_group('ttW')))
         elif key == 'THQ':
-            print 'Process tHQ frequency: ', len(processfreq.get_group('THQ'))
+            print('Process tHQ frequency: ', len(processfreq.get_group('THQ')))
         elif key == 'ttZ':
-            print 'Target ttZ frequency: ', len(samplefreq.get_group('ttZ'))
+            print('Target ttZ frequency: ', len(samplefreq.get_group('ttZ')))
         elif key == 'Other':
-            print 'Process Other frequency: ', len(processfreq.get_group('Other'))
-        print "TotalWeights = %f" % (data.ix[(data.key.values==key)]["totalWeight"].sum())
+            print('Process Other frequency: ', len(processfreq.get_group('Other')))
+        print("TotalWeights = %f" % (data.ix[(data.key.values==key)]["totalWeight"].sum()))
         nNW = len(data.ix[(data["totalWeight"].values < 0) & (data.key.values==key) ])
-        print key, "events with -ve weights", nNW
-    print '<load_data> data columns: ', (data.columns.values.tolist())
+        print(key, "events with -ve weights", nNW)
+    print('<load_data> data columns: ', (data.columns.values.tolist()))
     n = len(data)
     nttH = len(data.ix[data.target.values == 0])
     nttJ = len(data.ix[data.target.values == 1])
@@ -169,7 +169,7 @@ def load_data(inputPath,variables,criteria):
     nTHQ = len(data.ix[data.target.values == 3])
     nttZ = len(data.ix[data.target.values == 4])
     nOther = len(data.ix[data.target.values == 5])
-    print "Total length of nttH = %i, ttJ = %i, nttW = %i, nTHQ = %i" % (nttH, nttJ , nttW, nTHQ)
+    print("Total length of nttH = %i, ttJ = %i, nttW = %i, nTHQ = %i" % (nttH, nttJ , nttW, nTHQ))
     return data
 
 def load_trained_model(weights_path, num_variables, optimizer,nClasses):
@@ -187,12 +187,12 @@ def normalise(x_train, x_test):
 def baseline_model(num_variables,optimizer,nClasses):
     model = Sequential()
     model.add(Dense(32,input_dim=num_variables,kernel_initializer='glorot_normal',activation='relu'))
-    for index in xrange(5):
+    for index in range(5):
         model.add(Dense(16,activation='relu'))
         model.add(Dropout(0.01))
-    for index in xrange(5):
+    for index in range(5):
         model.add(Dense(16,activation='relu'))
-    for index in xrange(5):
+    for index in range(5):
         model.add(Dense(8,activation='relu'))
     model.add(Dense(nClasses, activation='softmax'))
     if optimizer=='Adam':
@@ -203,21 +203,21 @@ def baseline_model(num_variables,optimizer,nClasses):
 
 def check_dir(dir):
     if not os.path.exists(dir):
-        print 'mkdir: ', dir
+        print('mkdir: ', dir)
         os.makedirs(dir)
 
 # Ratio always > 1. mu use in natural log multiplied into ratio. Keep mu above 1 to avoid class weights going negative.
 def create_class_weight(labels_dict,mu=0.9):
-    total = np.sum(labels_dict.values()) # total number of examples in all datasets
-    keys = labels_dict.keys() # labels
+    total = np.sum(list(labels_dict.values())) # total number of examples in all datasets
+    keys = list(labels_dict.keys()) # labels
     class_weight = dict()
-    print 'total: ', total
+    print('total: ', total)
 
     for key in keys:
         # logarithm smooths the weights for very imbalanced classes.
         score = math.log(mu*total/float(labels_dict[key])) # natlog(parameter * total number of examples / number of examples for given label)
         #score = float(total/labels_dict[key])
-        print 'score = ', score
+        print('score = ', score)
         if score > 0.:
             class_weight[key] = score
         else :
@@ -225,7 +225,7 @@ def create_class_weight(labels_dict,mu=0.9):
     return class_weight
 
 def main():
-    print 'Using Keras version: ', keras.__version__
+    print('Using Keras version: ', keras.__version__)
 
     usage = 'usage: %prog [options]'
     parser = argparse.ArgumentParser(usage)
@@ -254,7 +254,7 @@ def main():
         selection_criteria = '(is_tH_like_and_not_ttH_like==0 || is_tH_like_and_not_ttH_like==1)'#&& n_presel_jet>=3'
 
     # Load Variables from .json
-    variable_list = json.load(input_var_jsonFile,encoding="utf-8").items()
+    variable_list = list(json.load(input_var_jsonFile,encoding="utf-8").items())
 
     # Create list of headers for dataset .csv
     column_headers = []
@@ -265,16 +265,16 @@ def main():
     column_headers.append('nEvent')
 
     # Create instance of the input files directory
-    inputs_file_path = '/afs/cern.ch/work/j/jthomasw/private/IHEP/ttHML/github/ttH_multilepton/keras-DNN/samples/rootplas_LegacyMVA_1113/DiLepRegion/ttH2017TrainDNN2L/'
+    inputs_file_path = '/home/binghuan/Work/TTHLep/TTHLep_RunII/Legacy_NNs/data/LegacyMVA_tau2p1_1204/DiLepRegion/ttH2017TrainDNN2L/'
 
     # Load ttree into .csv including all variables listed in column_headers
-    print '<train-DNN> Input file path: ', inputs_file_path
+    print('<train-DNN> Input file path: ', inputs_file_path)
     outputdataframe_name = '%s/output_dataframe_%s.csv' %(output_directory,selection)
     if os.path.isfile(outputdataframe_name):
         data = pandas.read_csv(outputdataframe_name)
-        print '<train-DNN> Loading data .csv from: %s . . . . ' % (outputdataframe_name)
+        print('<train-DNN> Loading data .csv from: %s . . . . ' % (outputdataframe_name))
     else:
-        print '<train-DNN> Creating new data .csv @: %s . . . . ' % (inputs_file_path)
+        print('<train-DNN> Creating new data .csv @: %s . . . . ' % (inputs_file_path))
         data = load_data(inputs_file_path,column_headers,selection_criteria)
         data.to_csv(outputdataframe_name, index=False)
         data = pandas.read_csv(outputdataframe_name)
@@ -291,7 +291,7 @@ def main():
 
     # Remove last two columns (Event weight and xsrw) from column headers
     training_columns = column_headers[:-3]
-    print '<train-DNN> Training features: ', training_columns
+    print('<train-DNN> Training features: ', training_columns)
 
     # Select data from columns under the remaining column headers in traindataset
     X_train = traindataset[training_columns].values
@@ -362,7 +362,7 @@ def main():
     else:
         # Which model do you want to load?
         model_name = os.path.join(output_directory,'model.h5')
-        print '<train-DNN> Loaded Model: %s' % (model_name)
+        print('<train-DNN> Loaded Model: %s' % (model_name))
         model = load_trained_model(model_name,num_variables,optimizer,number_of_classes)
 
     # Node probabilities for training sample events
@@ -395,7 +395,7 @@ def main():
 
     # Get true process values for testing dataset
     original_encoded_test_Y = []
-    for i in xrange(len(result_probs_test)):
+    for i in range(len(result_probs_test)):
         if Y_test[i][0] == 1:
             original_encoded_test_Y.append(0)
         if Y_test[i][1] == 1:
@@ -407,7 +407,7 @@ def main():
 
     # Get true process integers for training dataset
     original_encoded_train_Y = []
-    for i in xrange(len(result_probs)):
+    for i in range(len(result_probs)):
         if Y_train[i][0] == 1:
             original_encoded_train_Y.append(0)
         if Y_train[i][1] == 1:
