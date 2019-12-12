@@ -6,19 +6,21 @@ This python script uses the Keras library to train deep neural network for ttH m
 #### Authors: Joshuha Thomas-Wilsker (IHEP CAS CERN), Binghuan Li (IHEP CAS CERN)
 
 ## Introduction
-- This script and the setup in this .md has been written assuming one is logged on to a CERN lxplus slc7 machine (the default lxplus operating system).
+- This script and the setup in this .md has been written assuming one has install [anaconda][ana] on the local machine
 - Using Keras interface with Tensorflow backend to create DNN model for ttH multilpeton dilepton analysis region.
-- In this setup we can easily change the backend in case we want to use e.g. Theano instead of TensorFlow.
 - Import all Keras libraries along with TensorFlow backend into pyROOT so that we can easily produce .root files.
 - Also using ROOT library: necessary for book-keeping / ROOT data structures etc.
 - All scripts will create .csv of input root files the first time they are run on the files.
 - Outputs from training stored in hard-coded output directory in train-DNN.py. Similar story for application outputs.
 
-## New shell
-When you first open a new shell you only need to run the commands to source a software stack:
+[ana]:https://www.anaconda.com/distribution/
+
+## Install packages
+- Create the environment from the `environment.yml` file, the first line of the `yml` file sets the new environment's name.
 ```
-source /cvmfs/sft.cern.ch/lcg/views/LCG_94/x86_64-centos7-gcc7-opt/setup.sh
+conda env create -f environment.yml
 ```
+- Activate the new environment: `conda activate my_root_env`
 
 ## DNN Training
 Before you start, make sure you have input .root files stored somewhere and make sure the path to these files and the correct names are hardcoded into the train-DNN.py script. Also, make sure the input features in the input features .json you are using (e.g. input_vars_SigRegion_wFwdJet.json) exist in the input .root files you want to use. There is also currently some training region selection applied to the .root files before the .csv files are created. These use variables that are required to be in the input files. Please chekc this before running otherwise the code may crash.
